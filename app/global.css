@@ -1,0 +1,48 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body, html {
+    width: 100%;
+}
+
+body {
+    font-family: 'Rubik', sans-serif;
+    background-color: #ffffff;
+    color: #000000;
+}
+
+header {
+    height: auto;
+    display: flex;
+    background-color: transparent;
+    align-items: center;
+    padding: 20px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+nav {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+}
+
+nav a {
+    font-size: 18px;
+    text-decoration: none;
+    font-weight: 500;
+    color: #003d6b;
+    transition: color 0.3s ease;
+}
+
+nav a:hover {
+    color: #0055a0;
+}
+
+.menu {
+    display: flex;
+    align-items: center;
+    width: 90%;
+}

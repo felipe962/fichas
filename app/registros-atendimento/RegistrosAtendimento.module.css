@@ -1,0 +1,295 @@
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  font-family: 'Rubik', sans-serif;
+}
+
+.header {
+  margin-bottom: 40px;
+}
+
+.header h1 {
+  font-size: 32px;
+  font-weight: 600;
+  color: #003d6b;
+  margin: 0;
+}
+
+/* Lista de Registros */
+.recordsList {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.recordCard {
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.recordCard:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.recordHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  border-bottom: 2px solid #f0f0f0;
+  padding-bottom: 10px;
+}
+
+.recordHeader h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #003d6b;
+}
+
+.age {
+  background: #e8f4f8;
+  color: #003d6b;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.recordInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.recordInfo p {
+  margin: 0;
+  font-size: 14px;
+  color: #666;
+}
+
+.recordInfo strong {
+  color: #003d6b;
+  font-weight: 600;
+}
+
+/* Detalhes */
+.detailsContainer {
+  background: white;
+  border-radius: 8px;
+  padding: 30px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.backButton {
+  background: none;
+  border: none;
+  color: #003d6b;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  margin-bottom: 20px;
+  transition: color 0.3s ease;
+}
+
+.backButton:hover {
+  color: #0055a0;
+}
+
+.detailsContent {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+}
+
+@media (max-width: 768px) {
+  .detailsContent {
+    grid-template-columns: 1fr;
+  }
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.section h2 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #003d6b;
+  margin: 0 0 10px 0;
+  border-bottom: 2px solid #e8f4f8;
+  padding-bottom: 10px;
+}
+
+.section h3 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #003d6b;
+  margin: 15px 0 10px 0;
+}
+
+.patientInfo {
+  background: #f9f9f9;
+  padding: 15px;
+  border-radius: 6px;
+  border-left: 4px solid #003d6b;
+}
+
+.patientInfo p {
+  margin: 5px 0;
+  font-size: 14px;
+  color: #333;
+}
+
+.patientInfo strong {
+  color: #003d6b;
+  font-weight: 600;
+}
+
+.dateInfo,
+.updateInfo,
+.attendanceInfo,
+.doctorInfo,
+.doctorSpecialization,
+.doctorUpdate {
+  background: #f9f9f9;
+  padding: 12px;
+  border-radius: 6px;
+  border-left: 4px solid #e8f4f8;
+}
+
+.dateInfo p,
+.updateInfo p,
+.attendanceInfo p,
+.doctorInfo p,
+.doctorSpecialization p,
+.doctorUpdate p {
+  margin: 5px 0;
+  font-size: 14px;
+  color: #333;
+}
+
+.dateInfo strong,
+.updateInfo strong,
+.attendanceInfo strong,
+.doctorInfo strong,
+.doctorSpecialization strong,
+.doctorUpdate strong {
+  color: #003d6b;
+  font-weight: 600;
+}
+
+.doctorLabel {
+  color: #999;
+  font-size: 13px;
+  margin: 0;
+}
+
+.attendanceSection {
+  background: #f9f9f9;
+  padding: 15px;
+  border-radius: 6px;
+  border-left: 4px solid #e8f4f8;
+}
+
+.attendanceSection p {
+  margin: 8px 0;
+  font-size: 14px;
+  color: #333;
+}
+
+.attendanceSection strong {
+  color: #003d6b;
+  font-weight: 600;
+}
+
+.observations {
+  color: #666;
+  font-size: 14px;
+  line-height: 1.6;
+  margin: 8px 0 0 0;
+}
+
+.statusContainer {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 2px solid #e8f4f8;
+}
+
+.statusButton {
+  padding: 12px 24px;
+  border-radius: 24px;
+  border: 2px solid;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: capitalize;
+}
+
+.statusButton.finalizado {
+  border-color: #e74c3c;
+  color: #e74c3c;
+  background: white;
+}
+
+.statusButton.finalizado:hover {
+  background: #ffe8e8;
+}
+
+.statusButton.emAndamento {
+  border-color: #27ae60;
+  color: #27ae60;
+  background: white;
+}
+
+.statusButton.emAndamento:hover {
+  background: #e8f8e8;
+}
+
+.messageContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  background: white;
+  border-radius: 8px;
+  padding: 30px;
+}
+
+.message {
+  text-align: center;
+}
+
+.message h2 {
+  font-size: 32px;
+  font-weight: 600;
+  color: #003d6b;
+  margin-bottom: 15px;
+}
+
+.message p {
+  font-size: 16px;
+  color: #666;
+  margin-bottom: 10px;
+}
+
+.redirectText {
+  font-size: 14px;
+  color: #999;
+  margin-top: 15px;
+  font-style: italic;
+}
