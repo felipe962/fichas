@@ -23,8 +23,9 @@ interface AttendanceRecordData {
 
 export default function RegistrosAtendimento() {
   const [selectedRecord, setSelectedRecord] = useState<AttendanceRecordData | null>(null);
-  const [showMessage, setShowMessage] = useState(false);
+  const [recentlyFinalizedId, setRecentlyFinalizedId] = useState<string | null>(null);
   const [records, setRecords] = useState<AttendanceRecordData[]>([]);
+  const [editedHealthStatus, setEditedHealthStatus] = useState<string>("");
 
   // Carregar registros salvos e processar nova ficha ao iniciar
   useEffect(() => {
@@ -32,6 +33,12 @@ export default function RegistrosAtendimento() {
     const savedRecords = localStorage.getItem('registrosAtendimento');
     if (savedRecords) {
       setRecords(JSON.parse(savedRecords));
+    }
+
+    // Carregar ID da ficha recentemente finalizada
+    const savedFinalizedId = localStorage.getItem('recentlyFinalizedId');
+    if (savedFinalizedId) {
+      setRecentlyFinalizedId(savedFinalizedId);
     }
 
     // Processar nova ficha se houver
@@ -88,16 +95,15 @@ export default function RegistrosAtendimento() {
     const dataFormatada = `${now.getDate()}/${now.getMonth() + 1}/${now.getFullYear()}`;
     const horaFormatada = `${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')}`;
     
-    // Estados de saúde possíveis após atendimento
-    const estadosSaude = ["estável", "bom", "razoável", "crítico", "recuperando"];
-    const estadoAleatorio = estadosSaude[Math.floor(Math.random() * estadosSaude.length)];
+    // Estado de saúde final (editável pelo usuário, ou mantém o atual)
+    const estadoFinal = editedHealthStatus || selectedRecord.healthStatus;
     
     // Atualizar o registro com status finalizado
     const registroAtualizado: AttendanceRecordData = {
       ...selectedRecord,
       attendanceStatus: "finalizado",
       attendanceEndTime: horaFormatada,
-      healthStatus: estadoAleatorio,
+      healthStatus: estadoFinal,
       lastUpdateTime: `${dataFormatada} ${horaFormatada}`,
       doctorLastUpdateTime: `Fim do atendimento: ${horaFormatada}`,
       doctorObservations: selectedRecord.doctorObservations.replace("Paciente aguardando atendimento", "Paciente atendido com sucesso"),
@@ -110,26 +116,11 @@ export default function RegistrosAtendimento() {
       )
     );
     
-    setShowMessage(true);
-    setTimeout(() => {
-      setSelectedRecord(null);
-      setShowMessage(false);
-    }, 2000);
+    // Voltar para a lista e exibir mensagem abaixo do card do paciente
+    setRecentlyFinalizedId(selectedRecord.id);
+    localStorage.setItem('recentlyFinalizedId', selectedRecord.id);
+    setSelectedRecord(null);
   };
-
-  if (showMessage) {
-    return (
-      <main className={styles.container}>
-        <div className={styles.messageContainer}>
-          <div className={styles.message}>
-            <h2>Atendimento Finalizado</h2>
-            <p>A ficha foi constatada e enviada para o sistema</p>
-            <p className={styles.redirectText}>Redirecionando para a lista...</p>
-          </div>
-        </div>
-      </main>
-    );
-  }
 
   if (!selectedRecord) {
     return (
@@ -140,20 +131,32 @@ export default function RegistrosAtendimento() {
 
         <div className={styles.recordsList}>
           {records.map((record) => (
-            <div
-              key={record.id}
-              className={styles.recordCard}
-              onClick={() => setSelectedRecord(record)}
-            >
-              <div className={styles.recordHeader}>
-                <h3>{record.patientName}</h3>
-                <span className={styles.age}>{record.patientAge} anos</span>
+            <div key={record.id}>
+              <div
+                className={styles.recordCard}
+                onClick={() => {
+                  setSelectedRecord(record);
+                  setEditedHealthStatus(record.healthStatus);
+                  // Limpar mensagem se clicar na ficha que foi finalizada
+                  if (recentlyFinalizedId === record.id) {
+                    setRecentlyFinalizedId(null);
+                    localStorage.removeItem('recentlyFinalizedId');
+                  }
+                }}
+              >
+                <div className={styles.recordHeader}>
+                  <h3>{record.patientName}</h3>
+                  <span className={styles.age}>{record.patientAge} anos</span>
+                </div>
+                <div className={styles.recordInfo}>
+                  <p><strong>Estado de saúde:</strong> {record.healthStatus}</p>
+                  <p><strong>Data do atendimento:</strong> {record.attendanceDate}</p>
+                  <p><strong>Última atualização:</strong> {record.lastUpdateTime}</p>
+                </div>
               </div>
-              <div className={styles.recordInfo}>
-                <p><strong>Estado de saúde:</strong> {record.healthStatus}</p>
-                <p><strong>Data do atendimento:</strong> {record.attendanceDate}</p>
-                <p><strong>Última atualização:</strong> {record.lastUpdateTime}</p>
-              </div>
+              {recentlyFinalizedId === record.id && (
+                <div className={styles.inlineMessage}>ficha constada no sistema</div>
+              )}
             </div>
           ))}
         </div>
@@ -174,7 +177,18 @@ export default function RegistrosAtendimento() {
             <div className={styles.patientInfo}>
               <p><strong>{selectedRecord.patientName}</strong></p>
               <p>{selectedRecord.patientAge} anos</p>
-              <p>estado de saúde: {selectedRecord.healthStatus}</p>
+              <p>estado de saúde: {" "}
+                <select
+                  value={editedHealthStatus || selectedRecord.healthStatus}
+                  onChange={(e) => setEditedHealthStatus(e.target.value)}
+                >
+                  <option value="bom">bom</option>
+                  <option value="estável">estável</option>
+                  <option value="razoável">razoável</option>
+                  <option value="crítico">crítico</option>
+                  <option value="recuperando">recuperando</option>
+                </select>
+              </p>
             </div>
             <div className={styles.dateInfo}>
               <p><strong>Data do Atendimento:</strong></p>
@@ -229,7 +243,7 @@ export default function RegistrosAtendimento() {
               className={`${styles.statusButton} ${selectedRecord.attendanceStatus === "finalizado" ? styles.finalizado : styles.emAndamento}`}
               onClick={handleFinalize}
             >
-              Atendimento {selectedRecord.attendanceStatus === "finalizado" ? "finalizado" : "em andamento"}
+              Dar Baixa no sistema
             </button>
           </div>
         </div>
