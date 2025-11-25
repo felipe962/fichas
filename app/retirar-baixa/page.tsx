@@ -47,6 +47,17 @@ export default function RetirarBaixa() {
     return data.toLocaleString('pt-BR');
   };
 
+  const formatarDataParaAPI = (dataISO: string) => {
+    const data = new Date(dataISO);
+    const ano = data.getFullYear();
+    const mes = String(data.getMonth() + 1).padStart(2, '0');
+    const dia = String(data.getDate()).padStart(2, '0');
+    const horas = String(data.getHours()).padStart(2, '0');
+    const minutos = String(data.getMinutes()).padStart(2, '0');
+    const segundos = String(data.getSeconds()).padStart(2, '0');
+    return `${ano}-${mes}-${dia} ${horas}:${minutos}:${segundos}`;
+  };
+
   const calcularTempoEspera = (entrada: string, saida: string) => {
     if (!saida) return "Em andamento";
     const dataEntrada = new Date(entrada);
@@ -73,15 +84,17 @@ export default function RetirarBaixa() {
       const agora = new Date();
       const tempo_saida = agora.toISOString();
 
-      // Dados para a API de consulta
+      // Dados para a API de consulta - formato esperado pela API
       const consultaData = {
-        tempo_entrada: ficha.tempo_entrada,
-        tempo_saida: tempo_saida,
-        id_unidade_saude: ficha.id_unidade_saude,
-        id_especialidade: ficha.id_especialidade
+        tempo_entrada: formatarDataParaAPI(ficha.tempo_entrada),
+        tempo_saida: formatarDataParaAPI(tempo_saida),
+        id_unidade_saude: String(ficha.id_unidade_saude),
+        id_especialidade: String(ficha.id_especialidade)
       };
 
+      console.log('Ficha completa:', ficha);
       console.log('Enviando para API:', consultaData);
+      console.log('JSON enviado:', JSON.stringify(consultaData, null, 2));
 
       // Fazer POST para a API
       const response = await fetch('https://api-tcc-node-js-1.onrender.com/v1/pas/consulta', {
@@ -124,6 +137,9 @@ export default function RetirarBaixa() {
       const fichasFinalizadas = JSON.parse(localStorage.getItem('fichasFinalizadas') || '[]');
       fichasFinalizadas.push(fichaAtualizada);
       localStorage.setItem('fichasFinalizadas', JSON.stringify(fichasFinalizadas));
+
+      // Salvar como novaFicha para aparecer em registros-atendimento
+      localStorage.setItem('novaFicha', JSON.stringify(fichaAtualizada));
 
       // Limpar ficha ativa
       localStorage.removeItem('fichaAtiva');
