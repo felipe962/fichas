@@ -57,8 +57,8 @@ export default function RetireFicha() {
     setLoading(true);
     
     // Validar campos obrigatórios
-    if (!formData.nome || !formData.idade || !formData.tempo_entrada || !formData.tempo_saida || !formData.id_especialidade) {
-      setErro("Nome, idade, horários de entrada/saída e especialidade são obrigatórios");
+    if (!formData.nome || !formData.idade || !formData.id_especialidade) {
+      setErro("Nome, idade e especialidade são obrigatórios");
       setLoading(false);
       return;
     }
@@ -73,27 +73,9 @@ export default function RetireFicha() {
     }
     
     try {
-      // Dados para a API de consulta
-      const consultaData = {
-        tempo_entrada: formData.tempo_entrada,
-        tempo_saida: formData.tempo_saida,
-        id_unidade_saude: 1,
-        id_especialidade: parseInt(formData.id_especialidade)
-      };
-      
-      const response = await fetch('https://api-tcc-node-js-1.onrender.com/v1/pas/consulta', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(consultaData)
-      });
-      
-      if (!response.ok) {
-        throw new Error('Erro ao agendar consulta');
-      }
-      
-      const result = await response.json();
+      // Registrar tempo de entrada automático
+      const agora = new Date();
+      const tempo_entrada = agora.toISOString();
       
       // Criar objeto com os dados da ficha
       const fichaData = {
@@ -105,21 +87,22 @@ export default function RetireFicha() {
         convenio: formData.convenio,
         acompanhante: formData.acompanhante,
         especialidade: especialidades.find(e => e.id === parseInt(formData.id_especialidade))?.nome,
-        tempo_entrada: formData.tempo_entrada,
-        tempo_saida: formData.tempo_saida,
+        id_especialidade: parseInt(formData.id_especialidade),
+        tempo_entrada: tempo_entrada,
+        tempo_saida: "", // Vazio até fazer a baixa
         timestamp: new Date().getTime(),
-        consultaResult: result
+        id_unidade_saude: 1
       };
       
       // Salvar no localStorage
-      localStorage.setItem('novaFicha', JSON.stringify(fichaData));
+      localStorage.setItem('fichaAtiva', JSON.stringify(fichaData));
       
-      // Redirecionar para registros
-      router.push("/registros-atendimento");
+      // Redirecionar para retirar-baixa
+      router.push("/retirar-baixa");
       
     } catch (error) {
-      console.error('Erro ao agendar consulta:', error);
-      setErro('Erro ao agendar consulta. Tente novamente.');
+      console.error('Erro ao criar ficha:', error);
+      setErro('Erro ao criar ficha. Tente novamente.');
     } finally {
       setLoading(false);
     }
@@ -127,7 +110,7 @@ export default function RetireFicha() {
 
   return (
     <main className={styles.container}>
-      <h1 className={styles.title}>Agendar Consulta</h1>
+      <h1 className={styles.title}>Retirar ficha</h1>
 
       <div className={styles.formContainer}>
         <div className={styles.leftColumn}>
@@ -194,26 +177,6 @@ export default function RetireFicha() {
                 </option>
               ))}
             </select>
-          </div>
-
-          <div className={styles.formGroup}>
-            <label>Horário de Entrada:</label>
-            <input
-              type="datetime-local"
-              name="tempo_entrada"
-              value={formData.tempo_entrada}
-              onChange={handleChange}
-            />
-          </div>
-
-          <div className={styles.formGroup}>
-            <label>Horário de Saída:</label>
-            <input
-              type="datetime-local"
-              name="tempo_saida"
-              value={formData.tempo_saida}
-              onChange={handleChange}
-            />
           </div>
 
           <div className={styles.formGroup}>
