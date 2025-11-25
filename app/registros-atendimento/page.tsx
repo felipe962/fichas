@@ -53,6 +53,10 @@ export default function RegistrosAtendimento() {
       const nomesMedicos = ["Dr. Carlos Silva", "Dra. Maria Santos", "Dr. João Oliveira", "Dra. Ana Costa", "Dr. Pedro Almeida"];
       const nomeMedico = nomesMedicos[Math.floor(Math.random() * nomesMedicos.length)];
       
+      const especialidadeInfo = novaFicha.especialidade ? `Especialidade: ${novaFicha.especialidade}` : "";
+      const consultaInfo = novaFicha.tempo_entrada && novaFicha.tempo_saida ? 
+        `Consulta agendada - Entrada: ${new Date(novaFicha.tempo_entrada).toLocaleString('pt-BR')} | Saída: ${new Date(novaFicha.tempo_saida).toLocaleString('pt-BR')}` : "";
+      
       const novoRegistro: AttendanceRecordData = {
         id: String(Date.now()),
         patientName: novaFicha.patientName,
@@ -60,13 +64,13 @@ export default function RegistrosAtendimento() {
         healthStatus: "aguardando atendimento",
         attendanceDate: dataFormatada,
         lastUpdateTime: `${dataFormatada} ${horaFormatada}`,
-        emergencyFile: novaFicha.atendimento === "emergencia" ? "Ficha emergencial" : "Ficha consulta",
-        emergencyDoctor: novaFicha.atendimento === "emergencia" ? "Médico emergencista" : "Médico clínico geral",
+        emergencyFile: novaFicha.especialidade ? `Consulta - ${novaFicha.especialidade}` : (novaFicha.atendimento === "emergencia" ? "Ficha emergencial" : "Ficha consulta"),
+        emergencyDoctor: novaFicha.especialidade ? `Especialista em ${novaFicha.especialidade}` : (novaFicha.atendimento === "emergencia" ? "Médico emergencista" : "Médico clínico geral"),
         attendanceStartTime: horaFormatada,
         attendanceEndTime: "-",
         doctorName: nomeMedico,
-        doctorSpecialization: novaFicha.atendimento === "emergencia" ? "Médico emergencista" : "Médico clínico geral",
-        doctorObservations: `Paciente aguardando atendimento. ${novaFicha.alergia ? `Alergias relatadas: ${novaFicha.alergia}` : "Sem alergias relatadas"}${novaFicha.acompanhante ? `. Acompanhante: ${novaFicha.acompanhante}` : ""}`,
+        doctorSpecialization: novaFicha.especialidade ? `Especialista em ${novaFicha.especialidade}` : (novaFicha.atendimento === "emergencia" ? "Médico emergencista" : "Médico clínico geral"),
+        doctorObservations: `Paciente aguardando atendimento. ${especialidadeInfo}${consultaInfo ? `. ${consultaInfo}` : ""}${novaFicha.alergia ? `. Alergias relatadas: ${novaFicha.alergia}` : ". Sem alergias relatadas"}${novaFicha.acompanhante ? `. Acompanhante: ${novaFicha.acompanhante}` : ""}${novaFicha.consultaResult ? `. Status da consulta: Agendada com sucesso` : ""}`,
         doctorLastUpdateTime: `Ficha retirada: ${horaFormatada}`,
         attendanceStatus: "em-andamento",
       };
